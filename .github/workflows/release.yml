@@ -27,7 +27,7 @@ jobs:
             echo "- Release $VERSION" > CHANGELOG_FRAGMENT.md
           fi
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: Release ${{ steps.changelog.outputs.version }}
           body_path: CHANGELOG_FRAGMENT.md
