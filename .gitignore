@@ -1,7 +1,6 @@
 # Dependencies
 node_modules/
 .pnpm-store/
-package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
@@ -48,6 +47,14 @@ htmlcov/
 # Playwright
 test-results/
 playwright-report/
+**/e2e/screenshots/
+
+# Next.js
+**/.next/
+next-env.d.ts
+
+# TypeScript
+*.tsbuildinfo
 
 # Docker
 *.env

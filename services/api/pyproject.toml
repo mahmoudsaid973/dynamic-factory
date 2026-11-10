@@ -30,6 +30,7 @@ dev = [
     "ruff>=0.9.0",
     "mypy>=1.14.0",
     "httpx>=0.28.0",
+    "aiosqlite>=0.22.0",
     "factory-boy>=3.3.0",
 ]
 
@@ -42,6 +43,7 @@ packages = ["src/dynamic_factory"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = "-v --cov=src/dynamic_factory --cov-report=term-missing"
@@ -55,7 +57,7 @@ src = ["src", "tests"]
 select = [
     "E", "F", "I", "N", "W", "UP", "B", "C4", "SIM", "ASYNC", "S",
 ]
-ignore = ["S101", "S311"]  # assert in tests, random for now
+ignore = ["S101", "S104", "S105", "S311", "B008"]  # assert in tests, defaults, random for now
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
@@ -73,3 +75,8 @@ plugins = ["pydantic.mypy"]
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
+
+[dependency-groups]
+dev = [
+    "aiosqlite>=0.22.1",
+]

@@ -20,7 +20,7 @@ cp .env.example .env
 docker compose up -d db redis
 
 cd services/api
-uv sync
+uv sync --all-extras
 uv run alembic upgrade head
 uv run python -m dynamic_factory.main
 
@@ -35,7 +35,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 | Task | Command |
 |---|---|
-| Backend tests | `cd services/api && uv run pytest` |
+| Backend tests | `cd services/api && uv sync --all-extras && uv run pytest` |
 | Frontend tests | `cd apps/web && npm test` |
 | E2E tests | `cd apps/web && npx playwright test` |
 | Lint backend | `cd services/api && uv run ruff check .` |
