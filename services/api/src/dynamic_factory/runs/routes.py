@@ -8,9 +8,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dynamic_factory.db import get_db
 from dynamic_factory.projects.models import Project
+from dynamic_factory.providers.registry import ProviderRegistry
+from dynamic_factory.runs.engine import execute_run
 from dynamic_factory.runs.models import Attempt, Invocation, Run
 from dynamic_factory.runs.schemas import AttemptRead, InvocationRead, RunCreate, RunRead
 from dynamic_factory.workflows.models import WorkflowVersion
+from dynamic_factory.workflows.routes import get_registry
 
 router = APIRouter(prefix="/api/v1/runs", tags=["runs"])
 
@@ -95,3 +98,24 @@ async def list_attempts(
         .order_by(Attempt.created_at.asc())
     )
     return list(result.scalars().all())
+
+
+@router.post("/{run_id}/start", response_model=RunRead)
+async def start_run(
+    run_id: uuid.UUID,
+    session: AsyncSession = Depends(get_db),
+    registry: ProviderRegistry = Depends(get_registry),
+) -> Run:
+    """Execute a run against its workflow version."""
+    run = await session.get(Run, run_id)
+    if run is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Run not found")
+
+    version = await session.get(WorkflowVersion, run.workflow_version_id)
+    if version is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Workflow version not found",
+        )
+
+    return await execute_run(run, version, registry, session)

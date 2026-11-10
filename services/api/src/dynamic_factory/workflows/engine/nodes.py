@@ -2,10 +2,17 @@
 
 import uuid
 from string import Template
-from typing import Any
+from typing import Any, Protocol
 
 from dynamic_factory.providers.registry import ProviderRegistry
-from dynamic_factory.workflows.models import Node
+
+
+class _NodeLike(Protocol):
+    """Duck-typed node usable by the executor."""
+
+    id: uuid.UUID
+    kind: str
+    config: dict[str, Any] | None
 
 
 def _upstream_outputs(
@@ -21,7 +28,7 @@ def _upstream_outputs(
     ]
 
 
-async def execute_prompt_node(node: Node, context: dict[uuid.UUID, str]) -> str:
+async def execute_prompt_node(node: _NodeLike, context: dict[uuid.UUID, str]) -> str:
     """Render a prompt template using upstream outputs."""
     config = node.config or {}
     template = Template(config.get("template", ""))
@@ -33,7 +40,7 @@ async def execute_prompt_node(node: Node, context: dict[uuid.UUID, str]) -> str:
 
 
 async def execute_llm_node(
-    node: Node,
+    node: _NodeLike,
     context: dict[uuid.UUID, str],
     edges: list[tuple[uuid.UUID, uuid.UUID]],
     registry: ProviderRegistry,
@@ -57,7 +64,7 @@ async def execute_llm_node(
 
 
 async def execute_node(
-    node: Node,
+    node: _NodeLike,
     context: dict[uuid.UUID, str],
     edges: list[tuple[uuid.UUID, uuid.UUID]],
     registry: ProviderRegistry,
@@ -68,4 +75,6 @@ async def execute_node(
         return await execute_prompt_node(node, context)
     if node.kind == "llm":
         return await execute_llm_node(node, context, edges, registry)
+    if node.kind == "noop":
+        return ""
     raise ValueError(f"Unknown node kind: {node.kind}")
