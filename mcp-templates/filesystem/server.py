@@ -38,9 +38,14 @@ def _tool_result(text: str, is_error: bool = False) -> dict:
     return {"content": [{"type": "text", "text": text}], "isError": is_error}
 
 
-def _handle(request: dict) -> dict:
+def _handle(request: dict) -> dict | None:
     method = request.get("method")
     params = request.get("params", {})
+    request_id = request.get("id")
+
+    # Notifications have no id and must not receive a response.
+    if request_id is None:
+        return None
 
     if method == "initialize":
         return {
