@@ -48,6 +48,14 @@ htmlcov/
 # Playwright
 test-results/
 playwright-report/
+e2e/screenshots/
+
+# Next.js
+.next/
+next-env.d.ts
+
+# TypeScript
+*.tsbuildinfo
 
 # Docker
 *.env
