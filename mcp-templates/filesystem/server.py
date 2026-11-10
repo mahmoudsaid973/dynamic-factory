@@ -119,7 +119,10 @@ def main() -> None:
         request = _read()
         if request is None:
             break
-        response = {"jsonrpc": "2.0", "id": request.get("id"), "result": _handle(request)}
+        result = _handle(request)
+        if result is None:
+            continue
+        response = {"jsonrpc": "2.0", "id": request.get("id"), "result": result}
         _send(response)
 
 

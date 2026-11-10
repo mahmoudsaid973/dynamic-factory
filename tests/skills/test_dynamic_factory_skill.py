@@ -3,7 +3,6 @@ import ast
 import re
 from pathlib import Path
 
-import pytest
 import yaml
 
 SKILL_DIR = Path("skills/autonomous-ai-agents/dynamic-factory")

@@ -1,6 +1,4 @@
 """Node that delegates file operations to an MCP stdio server."""
-import json
-
 from dynamic_factory.engine.nodes.base import BaseNode
 from dynamic_factory.mcp.client import MCPStdioClient
 
