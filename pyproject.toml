@@ -1,0 +1,17 @@
+[project]
+name = "dynamic-factory"
+version = "0.1.0"
+description = "Dynamic Factory monorepo"
+requires-python = ">=3.12"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",
+    "pyyaml>=6.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests/skills"]
+pythonpath = ["."]
+addopts = "-v"

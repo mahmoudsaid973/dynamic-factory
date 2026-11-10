@@ -49,9 +49,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --extra dev
       - name: Run Bandit
-        run: uv run bandit -r src -f json -o bandit-report.json || true
+        run: uv run --with bandit bandit -r src -f json -o bandit-report.json || true
       - name: Fail on high-severity issues
-        run: uv run bandit -r src -ll -ii
+        run: uv run --with bandit bandit -r src -ll -ii
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -113,9 +113,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --extra dev
       - name: Run pip-audit
-        run: uv run pip-audit --desc --format=json -o pip-audit.json || true
+        run: uv run --with pip-audit pip-audit --desc --format=json -o pip-audit.json || true
       - name: Fail on vulnerabilities
-        run: uv run pip-audit --desc
+        run: uv run --with pip-audit pip-audit --desc
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -125,9 +125,6 @@ jobs:
   npm-audit:
     name: npm Audit
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/web
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node.js
@@ -135,7 +132,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: apps/web/package-lock.json
+          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Run npm audit

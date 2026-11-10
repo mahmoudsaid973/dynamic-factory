@@ -49,9 +49,6 @@ jobs:
   bundle-size:
     name: Bundle Size Report
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/web
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node.js
@@ -59,15 +56,15 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: apps/web/package-lock.json
+          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Build and report bundle size
         run: |
-          npm run build
-          du -sh .next
-          du -sh .next/static 2>/dev/null || true
-          find .next -type f -name "*.js" -o -name "*.css" | xargs wc -c | sort -n | tail -20 || true
+          npm run build -w apps/web
+          du -sh apps/web/.next
+          du -sh apps/web/.next/static 2>/dev/null || true
+          find apps/web/.next -type f \( -name "*.js" -o -name "*.css" \) -exec wc -c {} + | sort -n | tail -20 || true
       - uses: actions/upload-artifact@v4
         with:
           name: web-bundle
