@@ -1,6 +1,7 @@
 """Workflow ORM models."""
 
 import uuid
+from typing import Any
 
 from sqlalchemy import JSON, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -16,7 +17,7 @@ class Workflow(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
-    config: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    config: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
 
     nodes: Mapped[list["Node"]] = relationship(
         back_populates="workflow",
@@ -42,7 +43,7 @@ class Node(Base):
     )
     kind: Mapped[str] = mapped_column(String(64), nullable=False)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    config: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    config: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
 
     workflow: Mapped["Workflow"] = relationship(back_populates="nodes")
 
