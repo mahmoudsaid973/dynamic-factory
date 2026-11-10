@@ -16,7 +16,7 @@
     "typecheck": "npm run typecheck -w apps/web"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^10.0.7"
   },
   "overrides": {
     "postcss": "^8.5.32"
