@@ -1,4 +1,6 @@
 """Workflow, node, and edge models used by the execution engine."""
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -17,7 +19,7 @@ class Node(BaseModel):
 
     id: str
     type: str
-    config: dict = Field(default_factory=dict)
+    config: dict[str, Any] = Field(default_factory=dict)
 
 
 class Workflow(BaseModel):

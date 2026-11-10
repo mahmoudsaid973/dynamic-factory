@@ -1,4 +1,6 @@
 """Node that delegates file operations to an MCP stdio server."""
+from typing import Any
+
 from dynamic_factory.engine.nodes.base import BaseNode
 from dynamic_factory.mcp.client import MCPStdioClient
 
@@ -6,7 +8,7 @@ from dynamic_factory.mcp.client import MCPStdioClient
 class MCPNode(BaseNode):
     """Execute filesystem operations through a configured MCP server."""
 
-    async def execute(self, context: dict) -> dict:
+    async def execute(self, context: dict[str, Any]) -> dict[str, Any]:
         """Run the configured MCP tool and return its text output."""
         cfg = self.node.config
         command = cfg.get("command")

@@ -1,5 +1,6 @@
 """Base node class for the workflow execution engine."""
 from abc import ABC, abstractmethod
+from typing import Any
 
 from dynamic_factory.models.workflow import Node
 
@@ -11,6 +12,6 @@ class BaseNode(ABC):
         self.node = node
 
     @abstractmethod
-    async def execute(self, context: dict) -> dict:
+    async def execute(self, context: dict[str, Any]) -> dict[str, Any]:
         """Execute the node and return its output dictionary."""
         ...
