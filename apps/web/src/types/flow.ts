@@ -1,4 +1,4 @@
-export type NodeKind = "prompt" | "llm";
+export type NodeKind = "prompt" | "llm" | "mcp";
 
 export interface FlowNode {
   id: string;

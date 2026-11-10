@@ -17,6 +17,7 @@ import "@xyflow/react/dist/style.css";
 import { useCallback, useMemo } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { LLMNode } from "@/components/nodes/LLMNode";
+import { MCPNode } from "@/components/nodes/MCPNode";
 import { PromptNode } from "@/components/nodes/PromptNode";
 import { createWorkflow } from "@/lib/api";
 import { useFactoryStore } from "@/lib/store";
@@ -27,11 +28,14 @@ type NodeData = Record<string, unknown> & {
   prompt?: string;
   providerId?: string;
   model?: string;
+  operation?: string;
+  path?: string;
 };
 
 const nodeTypes = {
   prompt: PromptNode,
   llm: LLMNode,
+  mcp: MCPNode,
 };
 
 export function FlowCanvas() {
@@ -46,17 +50,20 @@ export function FlowCanvas() {
   );
 
   const addNode = useCallback(
-    (kind: "prompt" | "llm") => {
+    (kind: "prompt" | "llm" | "mcp") => {
       const id = uuidv4();
       const position = { x: 250 + nodes.length * 30, y: 150 + nodes.length * 30 };
+      const baseData: NodeData = { label: kind === "prompt" ? "Prompt" : kind === "llm" ? "LLM" : "MCP" };
       const data: NodeData =
         kind === "prompt"
-          ? { label: "Prompt", prompt: "Hello, world!" }
-          : {
-              label: "LLM",
-              providerId: activeProviderId ?? undefined,
-              model: "default",
-            };
+          ? { ...baseData, prompt: "Hello, world!" }
+          : kind === "llm"
+            ? {
+                ...baseData,
+                providerId: activeProviderId ?? undefined,
+                model: "default",
+              }
+            : { ...baseData, operation: "read_file", path: "" };
       const node: Node = { id, type: kind, position, data };
       setNodes((prev) => [...prev, node]);
       window.setTimeout(() => fitView({ padding: 0.2 }), 50);
@@ -67,7 +74,7 @@ export function FlowCanvas() {
   const serializeWorkflow = useCallback(() => {
     const flowNodes: FlowNode[] = nodes.map((n) => ({
       id: n.id,
-      kind: n.type as "prompt" | "llm",
+      kind: n.type as "prompt" | "llm" | "mcp",
       name: (n.data.label as string) ?? n.type ?? "node",
       config: n.data,
     }));
@@ -107,6 +114,13 @@ export function FlowCanvas() {
           className="rounded bg-[var(--color-surface-elevated)] px-3 py-1.5 text-xs hover:bg-[var(--color-border)] border border-[var(--color-border)]"
         >
           + LLM
+        </button>
+        <button
+          type="button"
+          onClick={() => addNode("mcp")}
+          className="rounded bg-[var(--color-surface-elevated)] px-3 py-1.5 text-xs hover:bg-[var(--color-border)] border border-[var(--color-border)]"
+        >
+          + MCP
         </button>
         <button
           type="button"
