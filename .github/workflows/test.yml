@@ -33,7 +33,7 @@ jobs:
       - name: Run pytest
         run: uv run pytest --cov=src/dynamic_factory --cov-report=xml --cov-report=term
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           files: services/api/coverage.xml
           flags: api
@@ -57,7 +57,7 @@ jobs:
       - name: Run vitest
         run: npm run test -w apps/web -- --coverage --reporter=default --reporter=junit --outputFile=./apps/web/junit.xml
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           directory: apps/web/coverage
           flags: web
