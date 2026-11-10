@@ -2,7 +2,7 @@
 
 import os
 import uuid
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Iterator
 
 os.environ.setdefault("APP_ENV", "test")
 os.environ.setdefault("SECRET_KEY", "test-secret-key-for-encryption")
@@ -36,10 +36,10 @@ async def db_session() -> AsyncIterator[AsyncSession]:
 
 
 @pytest.fixture
-def client(db_session: AsyncSession) -> TestClient:
+def client(db_session: AsyncSession) -> Iterator[TestClient]:
     """Build a TestClient using the test database session."""
 
-    def override_get_db() -> AsyncIterator[AsyncSession]:
+    def override_get_db() -> Iterator[AsyncSession]:
         yield db_session
 
     app.dependency_overrides[get_db] = override_get_db

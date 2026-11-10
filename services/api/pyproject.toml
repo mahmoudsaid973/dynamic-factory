@@ -57,7 +57,7 @@ src = ["src", "tests"]
 select = [
     "E", "F", "I", "N", "W", "UP", "B", "C4", "SIM", "ASYNC", "S",
 ]
-ignore = ["S101", "S311"]  # assert in tests, random for now
+ignore = ["S101", "S104", "S105", "S311", "B008"]  # assert in tests, defaults, random for now
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

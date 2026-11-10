@@ -1,6 +1,7 @@
 """Provider ORM models."""
 
 import uuid
+from typing import Any
 
 from sqlalchemy import JSON, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
@@ -22,4 +23,4 @@ class Provider(Base):
     base_url: Mapped[str] = mapped_column(Text, nullable=False)
     encrypted_api_key: Mapped[str] = mapped_column(Text, nullable=False)
     model_default: Mapped[str] = mapped_column(String(255), nullable=False)
-    config: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    config: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
