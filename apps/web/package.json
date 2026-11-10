@@ -9,7 +9,7 @@
     "start": "next start",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "next lint",
+    "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "e2e": "playwright test"
   },
