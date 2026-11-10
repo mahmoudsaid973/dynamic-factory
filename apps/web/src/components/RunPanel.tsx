@@ -50,7 +50,13 @@ export function RunPanel() {
           {entries.map(([nodeId, output]) => (
             <li key={nodeId} className="rounded border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-2">
               <div className="text-xs font-bold text-[var(--color-text-muted)]">{nodeId}</div>
-              <div className={`text-xs ${output.status === "error" ? "text-[var(--color-error)]" : "text-[var(--color-text)]`}>
+              <div
+                className={
+                  output.status === "error"
+                    ? "text-xs text-[var(--color-error)]"
+                    : "text-xs text-[var(--color-text)]"
+                }
+              >
                 {output.status}
               </div>
               {output.output && (
