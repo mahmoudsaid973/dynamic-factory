@@ -6,9 +6,18 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+# Import model modules to register all tables with SQLAlchemy metadata.
+from dynamic_factory.allowance import models as _allowance_models  # noqa: F401
+from dynamic_factory.bridge import models as _bridge_models  # noqa: F401
 from dynamic_factory.config import settings
+from dynamic_factory.connectors import models as _connectors_models  # noqa: F401
 from dynamic_factory.db import Base, engine
+from dynamic_factory.events import models as _events_models  # noqa: F401
+from dynamic_factory.projects import models as _projects_models  # noqa: F401
+from dynamic_factory.projects.routes import router as projects_router
 from dynamic_factory.providers.routes import router as providers_router
+from dynamic_factory.runs import models as _runs_models  # noqa: F401
+from dynamic_factory.workflows.routes import legacy_router as workflows_legacy_router
 from dynamic_factory.workflows.routes import router as workflows_router
 
 
@@ -37,6 +46,8 @@ app.add_middleware(
 
 app.include_router(providers_router)
 app.include_router(workflows_router)
+app.include_router(workflows_legacy_router)
+app.include_router(projects_router)
 
 
 @app.get("/health")

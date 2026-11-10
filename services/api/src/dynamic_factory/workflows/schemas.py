@@ -1,6 +1,7 @@
 """Workflow Pydantic schemas."""
 
 import uuid
+from datetime import datetime
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -61,12 +62,36 @@ class WorkflowRead(BaseModel):
     id: uuid.UUID
     name: str
     description: str | None = None
+    config: dict[str, Any] | None = None
+    is_template: bool
+    created_at: datetime
+    updated_at: datetime
     nodes: list[NodeRead]
     edges: list[EdgeRead]
-    config: dict[str, Any] | None = None
+
+
+class WorkflowVersionCreate(BaseModel):
+    """Payload to publish a workflow version from an explicit graph."""
+
+    graph: dict[str, Any]
+
+
+class WorkflowVersionRead(BaseModel):
+    """Public workflow version representation."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    workflow_id: uuid.UUID
+    version_number: int
+    graph: dict[str, Any]
+    published_at: datetime
 
 
 class WorkflowRunResponse(BaseModel):
     """Result of executing a workflow."""
 
-    outputs: dict[str, str]
+    run_id: uuid.UUID
+    workflow_id: uuid.UUID
+    status: str
+    outputs: dict[str, Any]

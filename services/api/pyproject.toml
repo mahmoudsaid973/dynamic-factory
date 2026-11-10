@@ -59,6 +59,10 @@ select = [
 ]
 ignore = ["S101", "S104", "S105", "S311", "B008"]  # assert in tests, defaults, random for now
 
+[tool.ruff.lint.per-file-ignores]
+"src/dynamic_factory/*/models.py" = ["UP037", "F821"]
+"src/dynamic_factory/models/*.py" = ["UP037", "F821"]
+
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
