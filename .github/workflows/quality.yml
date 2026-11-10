@@ -42,7 +42,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Check conventional commits
-        uses: webiny/action-conventional-commits@v1.3.0
+        uses: webiny/action-conventional-commits@v1.4.2
         with:
           allowed-commit-types: "feat,fix,docs,style,refactor,test,ci,chore,perf"
 
