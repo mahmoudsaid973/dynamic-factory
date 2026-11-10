@@ -48,10 +48,10 @@ htmlcov/
 # Playwright
 test-results/
 playwright-report/
-e2e/screenshots/
+**/e2e/screenshots/
 
 # Next.js
-.next/
+**/.next/
 next-env.d.ts
 
 # TypeScript
