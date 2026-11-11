@@ -5,7 +5,7 @@ import uuid
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
-from sqlalchemy import JSON, ForeignKey, Integer, String, Text
+from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from dynamic_factory.db import Base
@@ -25,8 +25,12 @@ class Workflow(Base):
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     config: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
     is_template: Mapped[bool] = mapped_column(default=False)
-    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(UTC))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+    )
     updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
         default=lambda: datetime.now(UTC),
         onupdate=lambda: datetime.now(UTC),
     )
@@ -61,7 +65,10 @@ class WorkflowVersion(Base):
     )
     version_number: Mapped[int] = mapped_column(Integer, nullable=False)
     graph: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
-    published_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(UTC))
+    published_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(UTC),
+    )
 
     workflow: Mapped["Workflow"] = relationship(back_populates="versions")
     bindings: Mapped[list["ProjectWorkflowBinding"]] = relationship(

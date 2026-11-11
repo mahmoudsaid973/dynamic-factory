@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from dynamic_factory.db import get_db
+from dynamic_factory.db import db_dependency
 from dynamic_factory.providers.registry import ProviderRegistry
 from dynamic_factory.workflows.engine.executor import execute_workflow
 from dynamic_factory.workflows.models import Edge, Node, Workflow, WorkflowVersion
@@ -23,7 +23,7 @@ legacy_router = APIRouter(prefix="/api/v1/flows", tags=["flows"])
 router = APIRouter(prefix="/api/v1/workflows", tags=["workflows"])
 
 
-async def get_registry(session: AsyncSession = Depends(get_db)) -> ProviderRegistry:
+async def get_registry(session: AsyncSession = Depends(db_dependency)) -> ProviderRegistry:
     """Dependency that loads the provider registry from the database."""
     return await ProviderRegistry().load(session)
 
@@ -82,7 +82,7 @@ async def _publish_version(
 @router.post("/", response_model=WorkflowRead, status_code=status.HTTP_201_CREATED)
 async def create_workflow(
     payload: WorkflowCreate,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> Workflow:
     """Create a workflow with its nodes and edges."""
     workflow = Workflow(
@@ -119,7 +119,7 @@ async def create_workflow(
 @router.get("/{workflow_id}", response_model=WorkflowRead)
 async def get_workflow(
     workflow_id: uuid.UUID,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> Workflow:
     """Return a workflow by id."""
     workflow = await session.get(Workflow, workflow_id)
@@ -136,7 +136,7 @@ async def get_workflow(
 async def create_workflow_version(
     workflow_id: uuid.UUID,
     payload: WorkflowVersionCreate,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> WorkflowVersion:
     """Publish an explicit graph as a new immutable workflow version."""
     return await _publish_version(workflow_id, payload.graph, session)
@@ -145,7 +145,7 @@ async def create_workflow_version(
 @router.get("/{workflow_id}/versions", response_model=list[WorkflowVersionRead])
 async def list_workflow_versions(
     workflow_id: uuid.UUID,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> list[WorkflowVersion]:
     """Return all published versions of a workflow."""
     result = await session.execute(
@@ -160,7 +160,7 @@ async def list_workflow_versions(
 async def get_workflow_version(
     workflow_id: uuid.UUID,
     version_id: uuid.UUID,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> WorkflowVersion:
     """Return a single published version."""
     version = await session.get(WorkflowVersion, version_id)
@@ -175,7 +175,7 @@ async def get_workflow_version(
 @legacy_router.post("/", response_model=WorkflowRead, status_code=status.HTTP_201_CREATED)
 async def create_flow(
     payload: WorkflowCreate,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> Workflow:
     """Create a workflow with its nodes and edges (legacy prefix)."""
     return await create_workflow(payload, session)
@@ -184,7 +184,7 @@ async def create_flow(
 @legacy_router.get("/{flow_id}", response_model=WorkflowRead)
 async def get_flow(
     flow_id: uuid.UUID,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> Workflow:
     """Return a workflow by id (legacy prefix)."""
     return await get_workflow(flow_id, session)
@@ -193,7 +193,7 @@ async def get_flow(
 @legacy_router.post("/{flow_id}/publish", response_model=WorkflowVersionRead)
 async def publish_flow(
     flow_id: uuid.UUID,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> WorkflowVersion:
     """Publish the current draft as an immutable workflow version (legacy)."""
     workflow = await session.get(Workflow, flow_id)
@@ -207,7 +207,7 @@ async def publish_flow(
 @legacy_router.get("/{flow_id}/versions", response_model=list[WorkflowVersionRead])
 async def list_flow_versions(
     flow_id: uuid.UUID,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> list[WorkflowVersion]:
     """Return all published versions of a workflow (legacy prefix)."""
     return await list_workflow_versions(flow_id, session)
@@ -216,7 +216,7 @@ async def list_flow_versions(
 @legacy_router.post("/{flow_id}/run", response_model=WorkflowRunResponse)
 async def run_flow(
     flow_id: uuid.UUID,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
     registry: ProviderRegistry = Depends(get_registry),
 ) -> WorkflowRunResponse:
     """Execute a workflow and return node outputs (legacy prefix)."""

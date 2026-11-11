@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from dynamic_factory.db import get_db
+from dynamic_factory.db import db_dependency
 from dynamic_factory.projects.models import Project, ProjectWorkflowBinding
 from dynamic_factory.projects.schemas import (
     ProjectCreate,
@@ -24,7 +24,7 @@ router = APIRouter(prefix="/api/v1/projects", tags=["projects"])
 @router.post("", response_model=ProjectRead, status_code=status.HTTP_201_CREATED)
 async def create_project(
     data: ProjectCreate,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(db_dependency),
 ) -> Project:
     """Create a new project for the current user."""
     project = Project(
@@ -41,7 +41,7 @@ async def create_project(
 
 @router.get("", response_model=list[ProjectRead])
 async def list_projects(
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(db_dependency),
 ) -> list[Project]:
     """List all projects."""
     result = await db.execute(select(Project))
@@ -51,7 +51,7 @@ async def list_projects(
 @router.get("/{project_id}", response_model=ProjectRead)
 async def get_project(
     project_id: uuid.UUID,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(db_dependency),
 ) -> Project:
     """Fetch a single project."""
     project = await db.get(Project, project_id)
@@ -64,7 +64,7 @@ async def get_project(
 async def update_project(
     project_id: uuid.UUID,
     data: ProjectUpdate,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(db_dependency),
 ) -> Project:
     """Update a project."""
     project = await db.get(Project, project_id)
@@ -83,7 +83,7 @@ async def update_project(
 @router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_project(
     project_id: uuid.UUID,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(db_dependency),
 ) -> None:
     """Delete a project and its bindings/runs."""
     project = await db.get(Project, project_id)
@@ -101,7 +101,7 @@ async def delete_project(
 async def bind_workflow_version(
     project_id: uuid.UUID,
     data: ProjectWorkflowBindingCreate,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(db_dependency),
 ) -> ProjectWorkflowBinding:
     """Bind a published workflow version to a project."""
     project = await db.get(Project, project_id)
@@ -130,7 +130,7 @@ async def bind_workflow_version(
 @router.get("/{project_id}/bindings", response_model=list[ProjectWorkflowBindingRead])
 async def list_bindings(
     project_id: uuid.UUID,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(db_dependency),
 ) -> list[ProjectWorkflowBinding]:
     """List workflow bindings for a project."""
     result = await db.execute(

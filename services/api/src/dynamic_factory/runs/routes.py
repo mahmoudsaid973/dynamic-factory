@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from dynamic_factory.db import get_db
+from dynamic_factory.db import db_dependency
 from dynamic_factory.projects.models import Project
 from dynamic_factory.providers.registry import ProviderRegistry
 from dynamic_factory.runs.engine import execute_run
@@ -21,7 +21,7 @@ router = APIRouter(prefix="/api/v1/runs", tags=["runs"])
 @router.post("/", response_model=RunRead, status_code=status.HTTP_201_CREATED)
 async def create_run(
     data: RunCreate,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> Run:
     """Start a durable run for a project + workflow version."""
     project = await session.get(Project, data.project_id)
@@ -51,7 +51,7 @@ async def create_run(
 @router.get("/", response_model=list[RunRead])
 async def list_runs(
     project_id: uuid.UUID | None = None,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> list[Run]:
     """List runs, optionally filtered by project."""
     query = select(Run)
@@ -64,7 +64,7 @@ async def list_runs(
 @router.get("/{run_id}", response_model=RunRead)
 async def get_run(
     run_id: uuid.UUID,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> Run:
     """Fetch a single run."""
     run = await session.get(Run, run_id)
@@ -76,7 +76,7 @@ async def get_run(
 @router.get("/{run_id}/invocations", response_model=list[InvocationRead])
 async def list_invocations(
     run_id: uuid.UUID,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> list[Invocation]:
     """List invocations inside a run."""
     result = await session.execute(
@@ -88,7 +88,7 @@ async def list_invocations(
 @router.get("/{run_id}/attempts", response_model=list[AttemptRead])
 async def list_attempts(
     run_id: uuid.UUID,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> list[Attempt]:
     """List attempts inside a run."""
     result = await session.execute(
@@ -103,7 +103,7 @@ async def list_attempts(
 @router.post("/{run_id}/start", response_model=RunRead)
 async def start_run(
     run_id: uuid.UUID,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
     registry: ProviderRegistry = Depends(get_registry),
 ) -> Run:
     """Execute a run against its workflow version."""

@@ -1,20 +1,21 @@
 """add mahmoud os core tables
 
 Revision ID: d1f2a3b4c5d6
-Revises: 8de0fb27cdaa, ab2027d854c0
+Revises: 8de0fb27cdaa
 Create Date: 2026-11-10 21:00:00.000000
 
 """
 from collections.abc import Sequence
+from typing import Union
 
 import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = 'd1f2a3b4c5d6'
-down_revision: str | Sequence[str] | None = ('8de0fb27cdaa', 'ab2027d854c0')
-branch_labels: str | Sequence[str] | None = None
-depends_on: str | Sequence[str] | None = None
+down_revision: Union[str, Sequence[str], None] = '8de0fb27cdaa'
+branch_labels: Union[str, Sequence[str], None] = None
+depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:

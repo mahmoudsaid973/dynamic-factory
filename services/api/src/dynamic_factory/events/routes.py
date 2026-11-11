@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from dynamic_factory.db import get_db
+from dynamic_factory.db import db_dependency
 from dynamic_factory.events.models import Event, Evidence
 from dynamic_factory.events.schemas import EventCreate, EventRead, EvidenceCreate, EvidenceRead
 from dynamic_factory.runs.models import Run
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/api/v1/events", tags=["events"])
 @router.post("/", response_model=EventRead, status_code=status.HTTP_201_CREATED)
 async def create_event(
     data: EventCreate,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> Event:
     """Record an event against a run/invocation/attempt."""
     run = await session.get(Run, data.run_id)
@@ -42,7 +42,7 @@ async def create_event(
 async def list_events(
     run_id: uuid.UUID | None = None,
     invocation_id: uuid.UUID | None = None,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> list[Event]:
     """List events, optionally filtered by run or invocation."""
     query = select(Event)
@@ -57,7 +57,7 @@ async def list_events(
 @router.post("/evidence", response_model=EvidenceRead, status_code=status.HTTP_201_CREATED)
 async def create_evidence(
     data: EvidenceCreate,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> Evidence:
     """Register a piece of evidence produced by execution."""
     run = await session.get(Run, data.run_id)
@@ -83,7 +83,7 @@ async def create_evidence(
 @router.get("/evidence", response_model=list[EvidenceRead])
 async def list_evidence(
     run_id: uuid.UUID | None = None,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> list[Evidence]:
     """List evidence, optionally filtered by run."""
     query = select(Evidence)

@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dynamic_factory.connectors.models import Connector
 from dynamic_factory.connectors.schemas import ConnectorCreate, ConnectorRead, ConnectorUpdate
-from dynamic_factory.db import get_db
+from dynamic_factory.db import db_dependency
 
 router = APIRouter(prefix="/api/v1/connectors", tags=["connectors"])
 
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/api/v1/connectors", tags=["connectors"])
 @router.post("/", response_model=ConnectorRead, status_code=status.HTTP_201_CREATED)
 async def create_connector(
     data: ConnectorCreate,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> Connector:
     """Register a new connector."""
     connector = Connector(
@@ -38,7 +38,7 @@ async def create_connector(
 @router.get("/", response_model=list[ConnectorRead])
 async def list_connectors(
     kind: str | None = None,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> list[Connector]:
     """List registered connectors."""
     query = select(Connector)
@@ -51,7 +51,7 @@ async def list_connectors(
 @router.get("/{connector_id}", response_model=ConnectorRead)
 async def get_connector(
     connector_id: uuid.UUID,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> Connector:
     """Fetch a single connector."""
     connector = await session.get(Connector, connector_id)
@@ -64,7 +64,7 @@ async def get_connector(
 async def update_connector(
     connector_id: uuid.UUID,
     data: ConnectorUpdate,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> Connector:
     """Update a connector's configuration or status."""
     connector = await session.get(Connector, connector_id)
@@ -83,7 +83,7 @@ async def update_connector(
 @router.delete("/{connector_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_connector(
     connector_id: uuid.UUID,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> None:
     """Remove a connector from the registry."""
     connector = await session.get(Connector, connector_id)

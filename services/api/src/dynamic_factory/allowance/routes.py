@@ -13,7 +13,7 @@ from dynamic_factory.allowance.schemas import (
     AllowanceReservationCreate,
     AllowanceReservationRead,
 )
-from dynamic_factory.db import get_db
+from dynamic_factory.db import db_dependency
 
 router = APIRouter(prefix="/api/v1/allowance", tags=["allowance"])
 
@@ -21,7 +21,7 @@ router = APIRouter(prefix="/api/v1/allowance", tags=["allowance"])
 @router.post("/ledgers", response_model=AllowanceLedgerRead, status_code=status.HTTP_201_CREATED)
 async def create_ledger(
     data: AllowanceLedgerCreate,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> AllowanceLedger:
     """Create a new allowance ledger for a scope."""
     ledger = AllowanceLedger(
@@ -41,7 +41,7 @@ async def create_ledger(
 @router.get("/ledgers", response_model=list[AllowanceLedgerRead])
 async def list_ledgers(
     scope: str | None = None,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> list[AllowanceLedger]:
     """List allowance ledgers."""
     query = select(AllowanceLedger)
@@ -54,7 +54,7 @@ async def list_ledgers(
 @router.get("/ledgers/{ledger_id}", response_model=AllowanceLedgerRead)
 async def get_ledger(
     ledger_id: uuid.UUID,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> AllowanceLedger:
     """Fetch a single ledger."""
     ledger = await session.get(AllowanceLedger, ledger_id)
@@ -71,7 +71,7 @@ async def get_ledger(
 async def reserve_units(
     ledger_id: uuid.UUID,
     data: AllowanceReservationCreate,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> AllowanceReservation:
     """Reserve units against a ledger."""
     ledger = await session.get(AllowanceLedger, ledger_id)
@@ -102,7 +102,7 @@ async def reserve_units(
 @router.post("/reservations/{reservation_id}/release", response_model=AllowanceReservationRead)
 async def release_reservation(
     reservation_id: uuid.UUID,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> AllowanceReservation:
     """Release a held reservation."""
     reservation = await session.get(AllowanceReservation, reservation_id)

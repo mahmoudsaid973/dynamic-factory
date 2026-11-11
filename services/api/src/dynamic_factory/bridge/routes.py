@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dynamic_factory.bridge.models import BridgeRequest
 from dynamic_factory.bridge.schemas import BridgeRequestCreate, BridgeRequestRead
-from dynamic_factory.db import get_db
+from dynamic_factory.db import db_dependency
 
 router = APIRouter(prefix="/api/v1/bridge", tags=["bridge"])
 
@@ -16,7 +16,7 @@ router = APIRouter(prefix="/api/v1/bridge", tags=["bridge"])
 @router.post("/requests", response_model=BridgeRequestRead, status_code=status.HTTP_201_CREATED)
 async def create_request(
     data: BridgeRequestCreate,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> BridgeRequest:
     """Record an incoming request and return its durable id."""
     request = BridgeRequest(
@@ -37,7 +37,7 @@ async def create_request(
 @router.get("/requests", response_model=list[BridgeRequestRead])
 async def list_requests(
     source: str | None = None,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> list[BridgeRequest]:
     """List bridge requests."""
     query = select(BridgeRequest)
@@ -50,7 +50,7 @@ async def list_requests(
 @router.get("/requests/{request_id}", response_model=BridgeRequestRead)
 async def get_request(
     request_id: uuid.UUID,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> BridgeRequest:
     """Fetch a single bridge request."""
     request = await session.get(BridgeRequest, request_id)
@@ -66,7 +66,7 @@ async def classify_request(
     tier: str | None = None,
     explanation: str | None = None,
     planned_workflow_id: uuid.UUID | None = None,
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(db_dependency),
 ) -> BridgeRequest:
     """Update the JEV classification of a request."""
     request = await session.get(BridgeRequest, request_id)
