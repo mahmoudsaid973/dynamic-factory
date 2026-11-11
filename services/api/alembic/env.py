@@ -8,9 +8,15 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+from dynamic_factory.allowance import models as _allowance_models  # noqa: F401
+from dynamic_factory.bridge import models as _bridge_models  # noqa: F401
 from dynamic_factory.config import settings
+from dynamic_factory.connectors import models as _connectors_models  # noqa: F401
 from dynamic_factory.db import Base
+from dynamic_factory.events import models as _events_models  # noqa: F401
+from dynamic_factory.projects import models as _projects_models  # noqa: F401
 from dynamic_factory.providers.models import Provider  # noqa: F401
+from dynamic_factory.runs import models as _runs_models  # noqa: F401
 from dynamic_factory.workflows.models import Edge, Node, Workflow  # noqa: F401
 
 config = context.config

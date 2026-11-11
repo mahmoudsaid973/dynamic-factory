@@ -20,9 +20,20 @@ class Base(DeclarativeBase):
     """Declarative base for all ORM models."""
 
 
-@asynccontextmanager
-async def get_db() -> AsyncIterator[AsyncSession]:
+async def _get_db() -> AsyncIterator[AsyncSession]:
     """Yield an async database session."""
+    async with async_session() as session:
+        try:
+            yield session
+        finally:
+            await session.close()
+
+
+get_db = asynccontextmanager(_get_db)
+
+
+async def db_dependency() -> AsyncIterator[AsyncSession]:
+    """Unwrapped async generator for FastAPI Depends."""
     async with async_session() as session:
         try:
             yield session

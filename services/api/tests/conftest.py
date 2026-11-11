@@ -11,7 +11,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from dynamic_factory.db import Base, get_db
+from dynamic_factory.db import Base, db_dependency
 from dynamic_factory.main import app
 
 
@@ -39,10 +39,10 @@ async def db_session() -> AsyncIterator[AsyncSession]:
 def client(db_session: AsyncSession) -> Iterator[TestClient]:
     """Build a TestClient using the test database session."""
 
-    def override_get_db() -> Iterator[AsyncSession]:
+    async def override_get_db() -> AsyncIterator[AsyncSession]:
         yield db_session
 
-    app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[db_dependency] = override_get_db
     with TestClient(app) as test_client:
         yield test_client
-    app.dependency_overrides.pop(get_db, None)
+    app.dependency_overrides.pop(db_dependency, None)
