@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.64.0",
-    "@xyflow/react": "^12.4.0",
+    "@xyflow/react": "^13.0.2",
     "axios": "^1.21.1",
     "next": "^15.5.29",
     "react": "^19.0.0",
